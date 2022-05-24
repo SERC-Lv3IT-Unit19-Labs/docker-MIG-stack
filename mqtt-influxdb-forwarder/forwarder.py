@@ -47,10 +47,17 @@ def on_message(client, userdata, msg):
     if any(pass_topic in topic for pass_topic in pass_topics) and topic != 'messages': # payload on device/sensor
         print(topic)
         try:
-            message = {
-                'topic': topic,
-                'payload': json.loads(msg.payload)#.decode("utf-8")
-            }
+            message = {'topic': topic}
+            if topic.endswith('/temperature'):
+                message['payload'] = {
+                    'measures': {'temperature': msg.payload}
+                }
+            elif topic.endswith('/humidity'):
+                message['payload'] = {
+                    'measures': {'humidity': msg.payload}
+                }
+            else:
+                message['payload'] = json.loads(msg.payload)#.decode("utf-8")
             print(message['payload'])
         except TypeError:   # catch invalid json deserialise
             print("Invalid payload Type")
